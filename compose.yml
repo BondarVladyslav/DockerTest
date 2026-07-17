@@ -1,0 +1,72 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-server
+    restart: always
+    networks:
+      - dbnet
+    expose:
+      - 8088
+    ports:
+      - "80:8088"
+    volumes:
+      - ./DjangoProject1/static:/app/www/librarysite/static
+      - ./DjangoProject1/media:/app/www/librarysite/media
+      - ./nginx/logs:/app/www/librarysite/logs
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - librarysite
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: psgr
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks:
+      - dbnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  adminer:
+    image: adminer
+    container_name: adminer
+    profiles: ["debug"]
+    ports:
+      - "127.0.0.1:8080:8080"
+    links:
+      - "postgres:db"
+    networks:
+      - dbnet
+    depends_on:
+      - postgres
+
+  librarysite:
+    build: ./DjangoProject1
+    image: librarysite
+    container_name: librarysite
+    restart: always
+    command: "gunicorn -c gunicorn.py library.wsgi"
+    env_file: .env
+    links:
+      - "postgres:dbps"
+    networks:
+      - dbnet
+    volumes:
+      - ./DjangoProject1:/app/www/LibraryData
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  dbnet:
+    driver: bridge
+
+volumes:
+  postgres-data:
