@@ -1,2 +1,5 @@
 
 DjangoProject1/.venv/
+
+ci_deploy_key
+ci_deploy_key.pub
