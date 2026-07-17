@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="empty-content">
+    <div class="form-page-container">
+        <div class="form-card">
+            <h1 class="form-page-title">📝 Редактирование профиля</h1>
+
+            {# Вывод сообщений (успех, ошибка) #}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="form-alert-card" style="background: {% if message.tags == 'success' %}rgba(34,197,94,0.1){% else %}rgba(239,68,68,0.1){% endif %}; 
+                                border-color: {% if message.tags == 'success' %}rgba(34,197,94,0.3){% else %}rgba(239,68,68,0.3){% endif %};">
+                        <div class="alert-icon">{% if message.tags == 'success' %}✅{% else %}⚠️{% endif %}</div>
+                        <div class="alert-text-block">
+                            <p class="global-error-msg" style="color: {% if message.tags == 'success' %}#bbf7d0{% else %}#fca5a5{% endif %};">
+                                {{ message }}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {# Поле username (disabled) #}
+                <div class="form-group">
+                    <label class="form-label" for="id_username">Имя пользователя</label>
+                    <input type="text" name="username" id="id_username" 
+                           value="{{ form.username.value|default:'' }}" 
+                           class="disabled-field" disabled>
+                </div>
+
+                {# Поле email (disabled) #}
+                <div class="form-group">
+                    <label class="form-label" for="id_email">Email</label>
+                    <input type="email" name="email" id="id_email" 
+                           value="{{ form.email.value|default:'' }}" 
+                           class="disabled-field" disabled>
+                </div>
+
+                {# Поле bio (редактируемое) #}
+                <div class="form-group">
+                    <label class="form-label" for="id_bio">О себе</label>
+                    <textarea name="bio" id="id_bio" rows="4" 
+                              class="form-textarea">{{ form.bio.value|default:'' }}</textarea>
+                    {% if form.bio.errors %}
+                        <div class="field-errors-list">
+                            {% for error in form.bio.errors %}
+                                <span class="form-error-msg">• {{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-form-btn">💾 Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

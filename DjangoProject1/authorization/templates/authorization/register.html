@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-page-container">
+    <div class="form-card">
+        <h1 class="form-page-title">Регистрация</h1>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required-star">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="field-errors-list">
+                            {% for error in field.errors %}
+                                <div class="form-error-msg">
+                                    <span class="error-bullet">•</span> {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="form-help-text">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="submit-form-btn">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

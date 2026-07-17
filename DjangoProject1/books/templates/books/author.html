@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="empty-content">
+    <!-- Шапка автора -->
+    <div class="profile-header" style="margin-bottom: 40px;">
+        <h1 class="profile-username">{{ author.name }}</h1>
+        {% if author.bio %}
+            <p class="profile-bio">{{ author.bio }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Заголовок раздела книг -->
+    <h2 class="section-title">📚 Книги автора</h2>
+
+    <!-- Сетка книг -->
+    <div class="books-grid">
+        {% for book in books %}
+            <div class="book-card">
+                <!-- Обложка / аватар книги -->
+                <div class="book-image-wrap">
+                <a href = {%url "bookByID" book.id%}>
+                    {% if book.book_avatar %}
+                        <img src="{{ book.book_avatar.url }}" alt="{{ book.title }}">
+                    {% else %}
+                        <div class="no-avatar" style="height:100%; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.3);">
+                            📖
+                        </div>
+                    {% endif %}</a>
+                </div>
+
+                <!-- Информация о книге -->
+                <div class="book-info-block">
+                    <h3 class="book-tile-title">{{ book.title }}</h3>
+
+                    <!-- Жанры книги (пилюли-ссылки) -->
+                    {% if book.genre.all %}
+                        <div class="admin-genres">
+                            {% for genre in book.genre.all %}
+                                <a href="{% url 'bookslist' %}?genre={{ genre.slug }}" class="genre-pill-link">
+                                    <span class="genre-pill">{{ genre.name }} ({{ genre.books_count }})</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="admin-genres">
+                            <span class="genre-pill">Без жанра</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-message" style="grid-column: 1/-1;">
+                У этого автора пока нет книг.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

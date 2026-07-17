@@ -1,0 +1,13 @@
+# Virtual Environment
+venv/
+env/
+.env
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+/staticfiles/
+__pycache__/
+*.pyc
+**/settings.py

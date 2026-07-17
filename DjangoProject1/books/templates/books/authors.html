@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="authors-page-container">
+    <div class="authors-grid">
+        {% for a in authors %}
+        <article class="author-card">
+            <h3 class="author-card-name">{{ a.name }}</h3>
+            
+            <div class="author-card-divider"></div>
+            
+            <a href="{{ a.get_absolute_url }}" class="author-read-btn">Читать</a>
+        </article>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

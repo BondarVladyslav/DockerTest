@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="book-detail-container">
+    
+    <aside class="book-detail-sidebar">
+        <div class="book-detail-cover">
+            {% if book.book_avatar %}
+                <img src="{{ book.book_avatar.url }}" alt="{{ book.title }}">
+
+            {% else %}
+                <div class="no-avatar">Нет обложки</div>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'download_book' book.id %}" class="download-large-btn">
+            Скачать книгу
+        </a>
+    </aside>
+
+    <main class="book-detail-main">
+        <h1 class="book-detail-title">{{ book.title }}</h1>
+        
+        {% if book.author %}
+            <a href="{% url 'authorbyslug' author_slug=book.author.slug %}">
+                <p class="book-detail-author">Автор: <span>{{ book.author }}</span></p>
+            </a>
+        {% endif %}
+        <div class="favorites-actions">
+                <form method = 'post'>
+                    <input type="hidden" name="action" value="toggle_favorite">
+                    {% csrf_token %}
+                    <button type = 'submit' class='add-to-favorites-btn'>
+                        {% if user.is_authenticated and book in user.additional_data.favourite_books.all %}
+                            <img src="{% static 'books/images/liked_book.png' %}" alt="Убрать из избранного" class="heart-icon">
+                        {% else %}
+                            <img src="{% static 'books/images/not_liked_book.png' %}" alt="Добавить в избранное" class="heart-icon" > 
+                        {% endif %}</button>
+                </form>
+                <form method = 'post'>
+                    <input type="hidden" name="action" value="toggle_finished_read">
+                    {% csrf_token %}
+                    <button type = 'submit' class='add-to-favorites-btn'>
+                        {% if user.is_authenticated and book in user.additional_data.finished_books.all %}
+                            <img src="{% static 'books/images/unfinish_book.png' %}" alt="Убрать из прочитанных" class="heart-icon">
+                        {% else %}
+                            <img src="{% static 'books/images/finish_book.png' %}" alt="Добавить в избранное" class="heart-icon" > 
+                        {% endif %}</button>
+                </form>
+        </div>
+        <div class="book-detail-divider"></div>
+        
+        <div class="book-detail-description">
+            {{ book.description|safe }}
+        </div>
+        {% for genre in book.genre.all %}
+            <a href="{% url 'bookslist' %}?genre={{ genre.slug }}" class="book-detail-genre-link">
+                <span class="book-detail-genre">{{ genre }}</span>
+            </a>
+        {% endfor %}
+<form method="post" class="comment-form" novalidate>
+    {% csrf_token %}
+    
+    <div class="comment-field">
+        {{ comment_form.text }}
+        {% if comment_form.text.errors %}
+            <div class="error-message">{{ comment_form.text.errors }}</div>
+        {% endif %}
+        <input type="hidden" name="action" value="add_comment">
+    </div>
+    
+    <button type="submit" class="submit-comment-btn">Отправить</button>
+</form>
+<div class="comments-section">
+    <h3 class="comments-title">Комментарии <span class="comments-count">({{ comments|length }})</span></h3>
+    
+    {% for comment in comments %}
+        <div class="comment-card">
+            <div class="comment-author"><a href="{% url 'authorization:user_profile' pk=comment.user.id %}">{{ comment.user.username }}</a></div>
+            <p class="comment-text">{{ comment.text|linebreaksbr }}</p>
+        </div>
+    {% empty %}
+        <p class="empty-comments">Пока нет комментариев. Будьте первым!</p>
+    {% endfor %}
+</div>
+    </main>
+
+</div>
+{% endblock %}

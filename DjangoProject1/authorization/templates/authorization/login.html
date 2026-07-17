@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="empty-content">
+    <div class="form-page-container">
+        <div class="form-card">
+            <h1 class="form-page-title">🔐 Вход в аккаунт</h1>
+
+            {# Вывод ошибок авторизации #}
+            {% if form.non_field_errors %}
+                <div class="form-alert-card">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-text-block">
+                        {% for error in form.non_field_errors %}
+                            <p class="global-error-msg">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label" for="id_username">Имя пользователя</label>
+                    <input type="text" name="username" id="id_username" 
+                           value="{{ form.username.value|default:'' }}" 
+                           class="form-input" autofocus>
+                    {% if form.username.errors %}
+                        <div class="field-errors-list">
+                            {% for error in form.username.errors %}
+                                <span class="form-error-msg">• {{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Поле пароля #}
+                <div class="form-group">
+                    <label class="form-label" for="id_password">Пароль</label>
+                    <input type="password" name="password" id="id_password" class="form-input">
+                    {% if form.password.errors %}
+                        <div class="field-errors-list">
+                            {% for error in form.password.errors %}
+                                <span class="form-error-msg">• {{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <button type="submit" class="submit-form-btn">🚪 Войти</button>
+
+                <div class="form-footer-links">
+                    <a href="{% url 'authorization:password_reset' %}" class="forgot-password-link">Забыли пароль?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

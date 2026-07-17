@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="empty-content">   <!-- используем существующий отступ -->
+    <div class="admin-page-header">
+        <h1>📚 Модерация книг</h1>
+        <p>Одобрите или удалите книги, ожидающие проверки</p>
+    </div>
+
+    <div class="books-grid">
+        {% for b in books %}
+            <div class="book-card">
+                <!-- Обложка / аватар -->
+                <div class="book-image-wrap">
+                    <a href = '{% url "bookByID" b.id %}'>'
+                    {% if b.book_avatar %}
+                        <img src="{{ b.book_avatar.url }}" alt="{{ b.title }}">
+                    {% else %}
+                        <div class="no-avatar" style="height:100%; display:flex; align-items:center; justify-content:center;">
+                            📖 Без обложки
+                        </div>
+                    {% endif %}
+                    </a>
+                </div>
+
+                <!-- Блок с информацией (название, описание, жанры, кнопки) -->
+                <div class="book-info-block">
+                    <h3 class="book-tile-title">{{ b.title }}</h3>
+
+                    <!-- Описание (всегда видимое, но урезанное) -->
+                    <div class="admin-book-desc">
+                        {{ b.description|truncatewords:30|default:"Описание отсутствует" }}
+                    </div>
+
+                    <!-- Жанры -->
+                    {% if b.genre.all %}
+                        <div class="admin-genres">
+                            {% for genre in b.genre.all %}
+                                <span class="genre-pill">{{ genre.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Кнопки действий -->
+                    <div class="admin-action-buttons">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="book_id" value="{{ b.pk }}">
+                            <button type="submit" name="action" value="publicate" class="approve-btn">
+                                ✅ Одобрить книгу
+                            </button>
+                        </form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="book_id" value="{{ b.pk }}">
+                            <button type="submit" name="action" value="delete" class="delete-btn">
+                                🗑️ Удалить книгу
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-message" style="grid-column: 1/-1;">
+                ✨ Нет книг на модерации
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

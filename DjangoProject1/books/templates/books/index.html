@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="books-page">
+
+    <div class="books-grid">
+        {% for b in latest_books %}
+        <article class="book-card">
+            <div class="book-image-wrap">
+                {% if b.book_avatar %}
+                <img src="{{ b.book_avatar.url }}" alt="{{ b.title }}">
+                {% endif %}
+                
+                <div class="book-hover-overlay">
+                    <p class="book-tile-desc">{{ b.description|truncatechars:50 }}</p>
+                    <a class="read-btn" href="{% url 'bookByID' b.id %}">Читать</a>
+                </div>
+            </div>
+
+            <div class="book-info-block">
+                <p class="book-tile-title" title="{{ b.title }}">{{ b.title }}</p>
+                <p class="book-tile-author">{{ b.author }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% for p in paginator.page_range %}
+        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

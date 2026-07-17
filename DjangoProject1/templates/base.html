@@ -1,0 +1,40 @@
+    {% load static %}
+    {%load books_tags%}
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Site</title>
+
+        <link rel="stylesheet" href="{% static 'books/css/style.css' %}">
+    </head>
+    <body>
+
+    <header class="fixed-header">
+        <div class="nav-group">
+            {% for btn in menu %}
+                <a href="{% url btn.link %}">
+                    <button class="menu-btn">{{ btn.title }}</button>
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="auth-group">
+        {% if user.is_authenticated %}
+            <a class="user-profile-link" href="{% url 'authorization:my_profile' %}">{{ user.username }}</a>
+            <form action="{% url 'authorization:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Выйти</button>
+            </form>
+        {% else %}
+            <a class="login-btn" href="{% url 'authorization:login' %}">Войти</a>
+            <a class="login-btn" href="{% url 'authorization:register' %}">Зарегистрироваться</a>
+        {% endif %}
+        </div>
+    </header>
+        <div class="empty-content">
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+    </html>
